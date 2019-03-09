@@ -1,8 +1,8 @@
-# Venue App in React and front end in css materialUi
+# Simple node.js api
 #TO USE RUN FOLLowing COMMANDS ON TERMINAL.
 
-#git clone https://github.com/adrianjcorrea/venue
+#git clone https://github.com/adrianjcorrea/Node.js-apis
 
 #npm install
 
-#npm start
+#node index.js
