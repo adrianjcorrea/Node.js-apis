@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/adrianjcorrea/Node.js-apis/issues"
   },
-  "homepage": "https://github.com/adrianjcorrea/Node.js-apis#readme"
+  "homepage": "https://github.com/adrianjcorrea/Node.js-apis#readme",
+  "dependencies": {
+    "restify": "^8.1.0"
+  }
 }
