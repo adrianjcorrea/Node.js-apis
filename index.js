@@ -43,6 +43,23 @@ server.post("/users", function(req, res, next){
   return next();
 });
 
+//Update a user using put request.
+server.put("/users/:id", function(req, res, next){
+  // Create a variable to call the user with perticular id.
+  let user = users[parseInt(req.params.id)];
+  // Create variable containing the data we are going to insert.
+  let updates = req.params;
+  //use a for loop to iterate thru our array of new parameters.
+  for(var i in updates){
+    user[i] = updates[i];
+  }
+  res.setHeader('content-type', 'application/json');
+  res.writeHead(200);
+  //update the specific user indexes
+  res.end(JSON.stringify(user[i]));
+  return next();
+});
+
 server.listen(8080, function() {
   console.log('%s listening at %s', server.name, server.url);
 });
