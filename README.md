@@ -5,4 +5,6 @@
 
 #npm install
 
-#node index.js
+#node index.js 
+
+#Automatically Start Server ( nodemon index.js)
