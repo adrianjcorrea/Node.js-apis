@@ -18,8 +18,14 @@ server.get("/", function(req, res, next){
        //return next();
    helper.success(res, next, users);
   });
+
   //Api call get user by id.
   server.get("/users/:id", function(req, res, next){
+      req.assert('id', 'Id is required and must be numeric').notEmpty().isInt();
+      const errors = req.validationErrors();
+     if(errors){ 
+         helper.failure(res, next, errors[0], 404);
+     }
     // Ternirary operator conditonals to return error if user not found.
     typeof(users[req.params.id]) === 'undefined' 
     ? helper.failure(res, next, 'This user dosent exist', 404)
@@ -28,8 +34,7 @@ server.get("/", function(req, res, next){
     // Return a response unique user depending on id.
       //res.end(JSON.stringify(users[parseInt(req.params.id)]));
       //return next();
-  : helper.success(res, next, users[parseInt(req.params.id)]);
-  
+    : helper.success(res, next, users[parseInt(req.params.id)]);
   });
   
   // Adding users using post requests

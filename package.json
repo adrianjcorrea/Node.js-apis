@@ -18,6 +18,7 @@
   "homepage": "https://github.com/adrianjcorrea/Node.js-apis#readme",
   "dependencies": {
     "nodemon": "^1.18.10",
-    "restify": "^8.1.0"
+    "restify": "^8.1.0",
+    "restify-validator": "^0.3.1"
   }
 }
