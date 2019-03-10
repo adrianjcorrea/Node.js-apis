@@ -2,12 +2,9 @@ const restify = require('restify');
 const server = restify.createServer();
 
 // Mock dataBase
-const users = {
- name: 'adrian',
- best: 'football'
-}
+const users = {}
 // I will be incrementing max users Id as i add a user.
-let max_user_id = 1;
+let max_user_id = 0;
 // Function lets us use plugin bodyParser to post a user.
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.bodyParser());
@@ -23,6 +20,15 @@ server.get("/", function(req, res, next){
   // Ensure the Ends of our req-res cycle.
   return next();
 });
+//Api call get user by id.
+server.get("/user/:id", function(req, res, next){
+  res.setHeader('content-type', 'application/json');
+  res.writeHead(200);
+  // Return a response unique user depending on id.
+  res.end(JSON.stringify(users[parseInt(req.params.id)]));
+  return next();
+});
+
 // Adding users using post requests
 server.post("/users", function(req, res, next){
   // Parameters coming in will define our new user.
