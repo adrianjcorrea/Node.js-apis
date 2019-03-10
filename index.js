@@ -45,13 +45,17 @@ server.get("/", function(req, res, next){
  success(res, next, users);
 });
 //Api call get user by id.
-server.get("/user/:id", function(req, res, next){
+server.get("/users/:id", function(req, res, next){
+  // Ternirary operator conditonals to return error if user not found.
+  typeof(users[req.params.id]) === 'undefined' 
+  ? failure(res, next, 'This user dosent exist', 404)
      //res.setHeader('content-type', 'application/json');
      //res.writeHead(200);
   // Return a response unique user depending on id.
     //res.end(JSON.stringify(users[parseInt(req.params.id)]));
     //return next();
- success(res, next, users[parseInt(req.params.id)]);
+: success(res, next, users[parseInt(req.params.id)]);
+
 });
 
 // Adding users using post requests
@@ -71,7 +75,6 @@ server.post("/users", function(req, res, next){
 
 //Update a user using put request.
 server.put("/users/:id", function(req, res, next){
-  // Create a variable to call the user with perticular id.
   let user = users[parseInt(req.params.id)];
   // Create variable containing the data we are going to insert.
   let updates = req.params;
@@ -84,17 +87,23 @@ server.put("/users/:id", function(req, res, next){
   //update the specific user indexes
      //res.end(JSON.stringify(user[i]));
      //return next();
-     success(res, next, user);
+  typeof(users[req.params.id]) === 'undefined' 
+  ? failure(res, next, 'This user dosent exist', 404)
+  // Create a variable to call the user with perticular id.
+  : 
+   success(res, next, user);
 });
 
 server.del( "/users/:id", function(req, res, next){
-  delete users[parseInt(req.params.id)];
+  typeof(users[req.params.id]) === 'undefined' 
+  ? failure(res, next, 'This user dosent exist', 404)
+  : delete users[parseInt(req.params.id)];
      //res.setHeader('content-type' ,'application/json');
      //res.writeHeader(200);
      //res.end(JSON.stringify(true));
      //return next();
   success(res, next, []);   
-})
+});
 
 server.listen(8080, function() {
   console.log('%s listening at %s', server.name, server.url);
