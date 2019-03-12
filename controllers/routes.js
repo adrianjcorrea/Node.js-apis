@@ -22,13 +22,13 @@ server.get("/", function(req, res, next){
   //Api call get user by id.
   server.get("/users/:id", function(req, res, next){
       req.assert('id', 'Id is required and must be numeric').notEmpty().isInt();
-      const errors = req.validationErrors();
+      var errors = req.validationErrors();
      if(errors){ 
          helper.failure(res, next, errors[0], 404);
      }
     // Ternirary operator conditonals to return error if user not found.
     typeof(users[req.params.id]) === 'undefined' 
-    ? helper.failure(res, next, 'This user dosent exist', 404)
+    ? helper.failure(res, next, 'This user dosent exist', 404).next()
        //res.setHeader('content-type', 'application/json');
        //res.writeHead(200);
     // Return a response unique user depending on id.
@@ -39,6 +39,18 @@ server.get("/", function(req, res, next){
   
   // Adding users using post requests
   server.post("/users", function(req, res, next){
+     //If the first parameter of assert fn is not passed in errors & failure fn will run.
+   req.assert('first_name', 'First name is required').notEmpty();
+   req.assert('last_name', 'Last name is required').notEmpty();
+   //If is not email or empty return error & failure fn.
+   req.assert('email_address', 'Email address is required and must be a valid email').notEmpty().isEmail();
+   //If value is not equal to student/teacher or professor or empty return error & failure fn.
+   req.assert('career', 'Career must be either student, teacher, or professor').isIn(['student','teacher','professor']);
+   var errors = req.validationErrors();
+   if (errors) {
+      helper.failure(res, next, errors, 400);
+      return next();
+   }
     // Parameters coming in will define our new user.
     let user = req.params;
     // Increment our max_user_id and set max_user_id as the user id.
@@ -57,6 +69,13 @@ server.get("/", function(req, res, next){
     let user = users[parseInt(req.params.id)];
     // Create variable containing the data we are going to insert.
     let updates = req.params;
+    // Id has to be a number and not null to return success.
+    req.assert('id', 'Id is required and must be numeric').notEmpty().isInt();
+		var errors = req.validationErrors();
+		if (errors) {
+			helper.failure(res, next, errors[0], 400);
+			return next();
+		}
     //use a for loop to iterate thru our array of new parameters.
     for(var i in updates){
       user[i] = updates[i];
@@ -74,7 +93,14 @@ server.get("/", function(req, res, next){
   });
   
   server.del( "/users/:id", function(req, res, next){
-    typeof(users[req.params.id]) === 'undefined' 
+      // Id has to be a number and not null to return success.
+   req.assert('id', 'Id is required and must be numeric').notEmpty().isInt();
+		var errors = req.validationErrors();
+		if (errors) {
+			helper.failure(res, next, errors[0], 400);
+			return next();
+		} 
+   typeof(users[req.params.id]) === 'undefined' 
     ? helper.failure(res, next, 'This user dosent exist', 404)
     : delete users[parseInt(req.params.id)];
        //res.setHeader('content-type' ,'application/json');
