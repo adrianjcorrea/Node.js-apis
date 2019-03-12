@@ -1,9 +1,9 @@
 const helper = require('../config/helperFunctions.js');
 const UserModel = require('../models/userModel.js');
 // Mock dataBase
-const users = {}
-// I will be incrementing max users Id as i add a user.
-let max_user_id = 0;
+//const users = {}
+  // I will be incrementing max users Id as i add a user.
+//let max_user_id = 0;
 
 module.exports = function(server){
 // Api call Get request.
@@ -15,26 +15,39 @@ server.get("/", function(req, res, next){
     // Return a response users object as a string.
        //res.end(JSON.stringify(users));
     // Ensure the Ends of our req-res cycle.
-       //return next();
+
+    //Added the find method functionality from mongoose on get request.
+    UserModel.find({}, function(err, users){
+        //return next();
    helper.success(res, next, users);
+    })
+      
   });
 
   //Api call get user by id.
   server.get("/users/:id", function(req, res, next){
-      req.assert('id', 'Id is required and must be numeric').notEmpty().isInt();
+      req.assert('id', 'Id is required and must be numeric').notEmpty();
       var errors = req.validationErrors();
      if(errors){ 
          helper.failure(res, next, errors[0], 404);
      }
-    // Ternirary operator conditonals to return error if user not found.
-    typeof(users[req.params.id]) === 'undefined' 
-    ? helper.failure(res, next, 'This user dosent exist', 404).next()
-       //res.setHeader('content-type', 'application/json');
-       //res.writeHead(200);
-    // Return a response unique user depending on id.
-      //res.end(JSON.stringify(users[parseInt(req.params.id)]));
+
+     //Added the find method functionality from mongoose on get request.
+    UserModel.find({ _id: req.params.id}, function(err, user){
       //return next();
-    : helper.success(res, next, users[parseInt(req.params.id)]);
+      user === null 
+      ? helper.failure(res, next, 'This user could not be found', 404)
+      : helper.success(res, next, user);
+    });
+      // Ternirary operator conditonals to return error if user not found.
+    //typeof(users[req.params.id]) === 'undefined' 
+    //? helper.failure(res, next, 'This user dosent exist', 404).next()
+         //res.setHeader('content-type', 'application/json');
+         //res.writeHead(200);
+      // Return a response unique user depending on id.
+        //res.end(JSON.stringify(users[parseInt(req.params.id)]));
+        //return next();
+   // : helper.success(res, next, users[parseInt(req.params.id)]);
   });
   
   // Adding users using post requests
@@ -62,7 +75,9 @@ server.get("/", function(req, res, next){
         //res.end(JSON.stringify(user));
         //return next();
     //helper.success(res, next, user);
-    user.firs_name = req.params.first_name;
+
+    // Configured funtionality for creating a user on MLAB.
+    user.first_name = req.params.first_name;
     user.last_name = req.params.last_name;
     user.email_address = req.params.email_address;
     user.career = req.params.career;
