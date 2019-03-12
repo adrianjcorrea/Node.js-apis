@@ -89,50 +89,101 @@ server.get("/", function(req, res, next){
     });
   });
   
-  //Update a user using put request.
+  //Update a user using put request didnt work properly.
+  //server.put("/users/:id", function(req, res, next){
+   // //let user = users[parseInt(req.params.id)];
+   // // Create variable containing the data we are going to insert.
+   // let updates = req.params;
+   // // Id has to be a number and not null to return success.
+   // req.assert('id', 'Id is required and must be numeric').notEmpty();
+	//	var errors = req.validationErrors();
+	//	if (errors) {
+	//		helper.failure(res, next, errors[0], 400);
+	//		return next();
+   //   }
+   //   delete updates.id;
+   // //use a for loop to iterate thru our array of new parameters.
+   // for(var i in updates){
+   //   UserModel[i] = updates[i];
+   // }
+   //    //res.setHeader('content-type', 'application/json');
+   //    //res.writeHead(200);
+   // //update the specific user indexes
+   //    //res.end(JSON.stringify(user[i]));
+   //    //return next();
+   //// typeof(users[req.params.id]) === 'undefined' 
+   //UserModel.find({ _id: req.params.id}, function(err, user){
+   //   //return next();
+   //   user === null 
+   // ? helper.failure(res, next, 'This user dosent exist', 404)
+   // // Create a variable to call the user with perticular id.
+   // : 
+   // user.save(function(err){
+   //   err ?
+   //   helper.failure(res, next, 'Error serving user to database', 500)
+   //   : helper.success(res, next, user);
+   //
+   //});
+
+   //  helper.success(res, next, user);
+   // });
+   //});
+
+   //Recreated put request first one not working.
   server.put("/users/:id", function(req, res, next){
-    let user = users[parseInt(req.params.id)];
-    // Create variable containing the data we are going to insert.
-    let updates = req.params;
-    // Id has to be a number and not null to return success.
-    req.assert('id', 'Id is required and must be numeric').notEmpty().isInt();
-		var errors = req.validationErrors();
-		if (errors) {
-			helper.failure(res, next, errors[0], 400);
-			return next();
-		}
-    //use a for loop to iterate thru our array of new parameters.
-    for(var i in updates){
-      user[i] = updates[i];
-    }
-       //res.setHeader('content-type', 'application/json');
-       //res.writeHead(200);
-    //update the specific user indexes
-       //res.end(JSON.stringify(user[i]));
-       //return next();
-    typeof(users[req.params.id]) === 'undefined' 
-    ? helper.failure(res, next, 'This user dosent exist', 404)
-    // Create a variable to call the user with perticular id.
-    : 
-    helper.success(res, next, user);
+   req.assert('id', 'Id is required and must be numeric').notEmpty();
+   var errors = req.validationErrors();
+   if (errors) {
+      helpers.failure(res, next, errors[0], 400);
+      return next();
+   }
+   UserModel.findOne({ _id: req.params.id }, function (err, user) {
+      if (err) {
+         helper.failure(res, next, 'Something went wrong while fetching the user from the database', 500);
+         return next();
+      }
+      if (user === null) {
+         helper.failure(res, next, 'The specified user could not be found', 404);
+         return next();
+      }
+      var updates = req.params;
+      delete updates.id;
+      for (var field in updates) {
+         user[field] = updates[field];
+      }
+      user.save(function (err) {
+         if (err) {
+            helper.failure(res, next, errors, 500);
+            return next();
+         }
+         helper.success(res, next, user);
+         return next();
+      });
+   });
   });
-  
+
   server.del( "/users/:id", function(req, res, next){
       // Id has to be a number and not null to return success.
-   req.assert('id', 'Id is required and must be numeric').notEmpty().isInt();
+   req.assert('id', 'Id is required and must be numeric').notEmpty();
 		var errors = req.validationErrors();
 		if (errors) {
 			helper.failure(res, next, errors[0], 400);
 			return next();
 		} 
-   typeof(users[req.params.id]) === 'undefined' 
+   //typeof(users[req.params.id]) === 'undefined' 
+   UserModel.findOne({ _id: req.params.id }, function (err, user) {
+      user === null
     ? helper.failure(res, next, 'This user dosent exist', 404)
-    : delete users[parseInt(req.params.id)];
+    :  user.remove(function (err) {
+        helper.success(res, next, []); 
+       //delete users[parseInt(req.params.id)];
        //res.setHeader('content-type' ,'application/json');
        //res.writeHeader(200);
        //res.end(JSON.stringify(true));
        //return next();
-    helper.success(res, next, []);   
+      });
+    });
   });
+
   
 };
