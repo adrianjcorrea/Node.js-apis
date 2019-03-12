@@ -1,5 +1,5 @@
 const helper = require('../config/helperFunctions.js');
-
+const UserModel = require('../models/userModel.js');
 // Mock dataBase
 const users = {}
 // I will be incrementing max users Id as i add a user.
@@ -52,16 +52,26 @@ server.get("/", function(req, res, next){
       return next();
    }
     // Parameters coming in will define our new user.
-    let user = req.params;
+    let user = new UserModel();
     // Increment our max_user_id and set max_user_id as the user id.
-    max_user_id++;
-    user.id = max_user_id;
-    users[user.id] = user;
-       //res.setHeader('content-type', 'application/json');
-       //res.writeHead(200);
-       //res.end(JSON.stringify(user));
-       //return next();
-    helper.success(res, next, user)
+    //max_user_id++;
+    //user.id = max_user_id;
+    //users[user.id] = user;
+        //res.setHeader('content-type', 'application/json');
+        //res.writeHead(200);
+        //res.end(JSON.stringify(user));
+        //return next();
+    //helper.success(res, next, user);
+    user.firs_name = req.params.first_name;
+    user.last_name = req.params.last_name;
+    user.email_address = req.params.email_address;
+    user.career = req.params.career;
+    user.save(function(err){
+       err ?
+       helper.failure(res, next, 'Error serving user to database', 500)
+       : helper.success(res, next, user);
+
+    });
   });
   
   //Update a user using put request.
